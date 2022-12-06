@@ -146,6 +146,21 @@ class DatawareHouse:
                 'count(neighborhood_name) as total_crimes '
                 'from crimes group by neighborhood_name;')
 
+        self.con.execute('drop view if exists neighborhood_crimes')
+        self.con.execute('create view neighborhood_crimes as Select neighborhood_name, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'homicide\') as homicides, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'robbery\') as robberies, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'assault w/dangerous weapon\') as assaults, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'theft f/auto\') as theft_from_auto, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'theft/other\') as other_thefts, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'motor vehicle theft\') as vehicle_theft, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'burglary\') as burglaries, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'sex abuse\') as sex_abuses, '
+                'count(neighborhood_name) FILTER (WHERE offense = \'arson\') as arsons,'
+                'count(neighborhood_name) FILTER (WHERE offensegroup = \'violent\') as violent_crimes,'
+                'count(neighborhood_name) FILTER (WHERE offensegroup = \'property\') as property_crimes,'
+                'count(neighborhood_name) as total_crimes '
+                'from crimes group by neighborhood_name;')
         self.con.execute('drop view if exists full_latest_listings')
         self.con.execute('create view full_latest_listings as select * from latest_listings left join neighborhood_crimes on latest_listings.neighbourhood_cleansed = neighborhood_crimes.neighborhood_name;')
         print("crime tables have been created")
