@@ -1,0 +1,4 @@
+# Problem Set 6 - Group 1 #
+## Secondary Dataset ##
+
+The secondary dataset we chose is the Crime data for Washington D.C. from 10/1/2021 to 10/1/2022. The data was originally from Metropolitan Police Department of Washington D.C. It's available to on [crimecards](https://crimecards.dc.gov/all:crimes/all:weapons/dated::10012021:10012022/citywide:heat). The dataset include many variables in it such as the type of the crime, the location where the crime happened, the start time and the end time for the crime. We also refer to the cluster id in the dataset and mapped to the neighborhood we have from the airbnb dataset. We believe there might be some correlation between the total crimes and the price of the airbnb listing.
