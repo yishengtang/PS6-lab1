@@ -4,6 +4,7 @@ import json
 import shutil
 import os
 import gzip
+import numpy as np
 
 names = ["11Jun22 neighbourhoods.geojson", "14Sep22 neighbourhoods.geojson", "15Dec21 neighbourhoods.geojson", "19Mar22 neighbourhoods.geojson"]
 
@@ -18,6 +19,15 @@ class DatawareHouse:
         self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('11Jun22 listings 2.csv');")
         self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('15Dec21 listings 2.csv');")
         self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('19Mar22 listings 2.csv');")
+
+        all_listings_df = self.con.execute("SELECT * from all_listings").df()
+        all_listings_df.price = all_listings_df.price.replace('\$|,', '', regex=True).astype(float)
+        all_listings_df['host_acceptance_rate'] = all_listings_df['host_acceptance_rate'].replace('N/A',np.NaN)
+        all_listings_df['host_acceptance_rate'] = all_listings_df['host_acceptance_rate'].replace('%', '', regex=True).astype(float)
+        all_listings_df['host_response_rate'] = all_listings_df['host_response_rate'].replace('N/A',np.NaN)
+        all_listings_df['host_response_rate'] = all_listings_df['host_response_rate'].replace('%', '', regex=True).astype(float)
+        self.con.execute('DROP TABLE IF EXISTS all_listings;')
+        self.con.execute("CREATE TABLE all_listings AS SELECT * FROM all_listings_df")
         
         # Create the view for the lastest listings
         self.con.execute('drop view if exists last_scraped')
