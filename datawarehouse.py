@@ -6,7 +6,7 @@ import os
 import gzip
 import numpy as np
 
-names = ["11Jun22 neighbourhoods.geojson", "14Sep22 neighbourhoods.geojson", "15Dec21 neighbourhoods.geojson", "19Mar22 neighbourhoods.geojson"]
+names = ["AirBnB_WashDC/11Jun22 neighbourhoods.geojson", "AirBnB_WashDC/14Sep22 neighbourhoods.geojson", "AirBnB_WashDC/15Dec21 neighbourhoods.geojson", "AirBnB_WashDC/19Mar22 neighbourhoods.geojson"]
 
 class DatawareHouse:
     def __init__(self) -> None:
@@ -14,11 +14,11 @@ class DatawareHouse:
     
     def createAllListings(self):
         self.con.execute('DROP TABLE IF EXISTS all_listings;')
-        self.con.execute("CREATE TABLE all_listings AS SELECT * FROM read_csv_auto('14Sep22 listings 2.csv');")
+        self.con.execute("CREATE TABLE all_listings AS SELECT * FROM read_csv_auto('AirBnB_WashDC/14Sep22 listings 2.csv');")
         self.con.execute("ALTER TABLE all_listings DROP source;")
-        self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('11Jun22 listings 2.csv');")
-        self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('15Dec21 listings 2.csv');")
-        self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('19Mar22 listings 2.csv');")
+        self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('AirBnB_WashDC/11Jun22 listings 2.csv');")
+        self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('AirBnB_WashDC/15Dec21 listings 2.csv');")
+        self.con.execute("INSERT INTO all_listings SELECT * FROM read_csv_auto('AirBnB_WashDC/19Mar22 listings 2.csv');")
 
         all_listings_df = self.con.execute("SELECT * from all_listings").df()
         all_listings_df.price = all_listings_df.price.replace('\$|,', '', regex=True).astype(float)
@@ -46,7 +46,7 @@ class DatawareHouse:
                     'feature_type VARCHAR,'
                     'geometry_type VARCHAR,'
                     'coordinates DOUBLE[][])')
-        df = pd.read_csv("11Jun22 neighbourhoods.csv")
+        df = pd.read_csv("AirBnB_WashDC/11Jun22 neighbourhoods.csv")
         total = pd.DataFrame()
         last = pd.DataFrame(columns=["type_outer", "feature_type", "geometry_type", "coordinates", "neighborhood", "neighborhood group"])
         diff = False
@@ -106,18 +106,18 @@ class DatawareHouse:
                     'reviewer_id INTEGER,'
                     'reviewer_name VARCHAR,'
                     'comments VARCHAR)')
-        reviews_df = pd.read_csv('14Sep22 reviews 2.csv')
-        pd.concat([reviews_df, pd.read_csv('11Jun22 reviews 2.csv')])
-        pd.concat([reviews_df, pd.read_csv('15Dec21 reviews 2.csv')])
-        pd.concat([reviews_df, pd.read_csv('19Mar22 reviews 2.csv')])
+        reviews_df = pd.read_csv('AirBnB_WashDC/14Sep22 reviews 2.csv')
+        pd.concat([reviews_df, pd.read_csv('AirBnB_WashDC/11Jun22 reviews 2.csv')])
+        pd.concat([reviews_df, pd.read_csv('AirBnB_WashDC/15Dec21 reviews 2.csv')])
+        pd.concat([reviews_df, pd.read_csv('AirBnB_WashDC/19Mar22 reviews 2.csv')])
         reviews_df.drop_duplicates(subset=['id'])
         self.con.execute("INSERT INTO reviews SELECT * FROM reviews_df;")
     
     def createCalendar(self):
-        self.unzipCalendar('15Dec21 calendar.csv.gz', "12_2021")
-        self.unzipCalendar('19Mar22 calendar.csv.gz', "03_2022")
-        self.unzipCalendar('11Jun22 calendar.csv.gz', "06_2022")
-        self.unzipCalendar('14Sep22 calendar.csv.gz', "09_2022")
+        self.unzipCalendar('AirBnB_WashDC/15Dec21 calendar.csv.gz', "12_2021")
+        self.unzipCalendar('AirBnB_WashDC/19Mar22 calendar.csv.gz', "03_2022")
+        self.unzipCalendar('AirBnB_WashDC/11Jun22 calendar.csv.gz', "06_2022")
+        self.unzipCalendar('AirBnB_WashDC/14Sep22 calendar.csv.gz', "09_2022")
 
         self.cleancsv('calendar12_2021.csv','$')
         self.cleancsv('calendar03_2022.csv','$')
@@ -132,15 +132,15 @@ class DatawareHouse:
             'adjusted_price INTEGER,'
             'minimum_nights INTEGER,'
             'maximum_nights INTEGER);')
-        self.con.execute("COPY calendar FROM 'calendar12_2021.csv' (AUTO_DETECT TRUE);")
-        self.con.execute("INSERT INTO calendar SELECT * FROM read_csv('calendar09_2022.csv', delim=',', header=True, columns={'listing_id': 'BIGINT', 'date': 'DATE', 'available': 'VARCHAR', 'price': 'INTEGER', 'adjusted_price': 'INTEGER', 'minimum_nights': 'INTEGER', 'maximum_nights': 'INTEGER'});")
-        self.con.execute("INSERT INTO calendar SELECT * FROM read_csv_auto('calendar03_2022.csv');")
-        self.con.execute("INSERT INTO calendar SELECT * FROM read_csv_auto('calendar06_2022.csv');")
+        self.con.execute("COPY calendar FROM 'AirBnB_WashDC/calendar12_2021.csv' (AUTO_DETECT TRUE);")
+        self.con.execute("INSERT INTO calendar SELECT * FROM read_csv('AirBnB_WashDC/calendar09_2022.csv', delim=',', header=True, columns={'listing_id': 'BIGINT', 'date': 'DATE', 'available': 'VARCHAR', 'price': 'INTEGER', 'adjusted_price': 'INTEGER', 'minimum_nights': 'INTEGER', 'maximum_nights': 'INTEGER'});")
+        self.con.execute("INSERT INTO calendar SELECT * FROM read_csv_auto('AirBnB_WashDC/calendar03_2022.csv');")
+        self.con.execute("INSERT INTO calendar SELECT * FROM read_csv_auto('AirBnB_WashDC/calendar06_2022.csv');")
         print("calendar tables have been created")
 
     def createCrime(self):
         self.con.execute('DROP TABLE IF EXISTS crimes;')
-        self.con.execute("CREATE TABLE crimes as SELECT * FROM read_csv('dc-crimes-search-results-V3.csv', dateformat='%m/%d/%Y, %H:%M:%S %p', AUTO_DETECT=TRUE);")
+        self.con.execute("CREATE TABLE crimes as SELECT * FROM read_csv('AirBnB_WashDC/dc-crimes-search-results-V3.csv', dateformat='%m/%d/%Y, %H:%M:%S %p', AUTO_DETECT=TRUE);")
 
         self.con.execute('drop view if exists neighborhood_crimes')
         self.con.execute('create view neighborhood_crimes as Select neighborhood_name, '
