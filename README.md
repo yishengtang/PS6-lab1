@@ -6,8 +6,8 @@ December 11, 2022
 
 # Group 1
 * Sakib Ahmed
-* David Arteche
 * Tanner Amundsen
+* David Arteche
 * Eva Jin
 * Emily Russell
 * Yisheng Tang
